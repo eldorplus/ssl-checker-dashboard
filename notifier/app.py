@@ -23,11 +23,9 @@ notify_every_n_hours = 0.5
 if "NOTIFY_EVERY_N_HOURS" in environ and environ["NOTIFY_EVERY_N_HOURS"]:
     notify_every_n_hours = float(environ["NOTIFY_EVERY_N_HOURS"])
 
-
 def send_notification(hosts_days_dict):
     response_code = post_message(webhook_url, hosts_days_dict)
     return response_code
-
 
 def is_redis_available():
     try:
@@ -61,7 +59,6 @@ def notify_expiring_soon():
             if response == 200:
                 for host in hosts_days_dict:
                     r.hset(host, "notified", "True")
-            
 
 
 def delete_notified_mark():
