@@ -2,7 +2,7 @@ version: "3"
 
 services:
   redis:
-    image: redis:6.0.5-alpine
+    image: redis:alpine-latest
     ports:
       - "6379:6379"
 
@@ -40,7 +40,7 @@ services:
       - checker
     environment:
       - REDIS_HOST=redis
-      - TZ=Pacific/Auckland
+      - TZ=Europe/Paris
       - SECONDS_BETWEEN_INFO_UPDATES=7200
       - SECONDS_BETWEEN_CHECKS_FOR_OUTDATING=10
       - SECONDS_BETWEEN_UPDATE_ABSENT=10
