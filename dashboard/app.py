@@ -54,7 +54,7 @@ def is_redis_available():
 
 def get_host_info_from_redis(host):
     if is_redis_available():
-        if (info := r.hget(host, "exp")) :
+        if (info := r.hget(host, "exp")):
             info = info.decode("utf-8")
             updated = datetime.fromtimestamp(
                 int(r.hget(host, "updated").decode("utf-8"))

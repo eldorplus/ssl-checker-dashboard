@@ -15,6 +15,7 @@ def compose_message(hosts_days_dict):
         message_text += f"\nThe SSL certificate of {host} will expire in {hosts_days_dict[host]} day(s)"
     return message_text
 
+
 def post_message(webhook_url, hosts_days_dict):
     if not webhook_url:
         raise Exception("Empty webhook url")
