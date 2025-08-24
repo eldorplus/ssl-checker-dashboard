@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 version: "2.2"
 
 services:
@@ -61,3 +62,68 @@ services:
       - ./nginx_conf/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - dashboard
+=======
+version: "3.8"
+
+services:
+  redis:
+    image: redis:alpine-latest
+    ports:
+      - "6379:6379"
+
+  checker:
+    build:
+      context: ./checker
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - SECONDS_BETWEEN_INFO_UPDATES=7200
+      - SECONDS_BETWEEN_CHECKS_FOR_OUTDATING=30
+      - SECONDS_BETWEEN_FILE_CHECKS=10
+      - IS_HASH_SUM_CHECK_ENABLED=True
+      - IS_FIRST_LOAD_FROM_FILE_ENABLED=True
+
+  notifier:
+    build:
+      context: ./notifier
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - NOTIFY_IF_DAYS_LEFT=20
+      - NOTIFY_EVERY_N_HOURS=8
+      - WEBHOOK_URL=${WEBHOOK_URL_FROM_SECRET_ENV_FILE}
+
+  dashboard:
+    build:
+      context: ./dashboard
+    expose:
+      - "8080"
+    scale: 3
+    depends_on:
+      - redis
+      - checker
+    environment:
+      - REDIS_HOST=redis
+      - TZ=Europe/Paris
+      - SECONDS_BETWEEN_INFO_UPDATES=7200
+      - SECONDS_BETWEEN_CHECKS_FOR_OUTDATING=30
+      - SECONDS_BETWEEN_UPDATE_ABSENT=10
+    command:
+      [
+        "--worker-tmp-dir /dev/shm",
+        "--log-file=-",
+        "--workers=2",
+        "-b 0.0.0.0:8080",
+      ]
+
+  nginx:
+    image: nginx:alpine-latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx_conf/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - dashboard
+>>>>>>> f8bc10803b8c37efd08d5c3fa2fabfd0a90bd5c5

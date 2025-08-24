@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 version: "3"
 
 services:
@@ -40,3 +41,47 @@ services:
         "-b 0.0.0.0:8080",
       ]
 
+=======
+version: "3.8"
+
+services:
+  redis:
+    image: redis:alpine-latest
+    ports:
+      - "6379:6379"
+
+  checker:
+    image: vensder/ssl-cert-checker
+    depends_on:
+      - redis
+    environment:
+      - IS_FIRST_LOAD_FROM_FILE_ENABLED=True
+
+  notifier:
+    image: vensder/ssl-cert-notifier
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - NOTIFY_IF_DAYS_LEFT=20
+      - NOTIFY_EVERY_N_HOURS=8
+      - WEBHOOK_URL=${WEBHOOK_URL_FROM_SECRET_ENV_FILE}
+
+  dashboard:
+    image: vensder/ssl-checker-dashboard
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+      - checker
+    environment:
+      - REDIS_HOST=redis
+    command:
+      [
+        "--worker-tmp-dir /dev/shm",
+        "--log-file=-",
+        "--workers=2",
+        "-b 0.0.0.0:8080",
+      ]
+
+>>>>>>> f8bc10803b8c37efd08d5c3fa2fabfd0a90bd5c5
